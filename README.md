@@ -9,6 +9,7 @@ github _username: [MrZyr0](https://github.com/MrZyr0)
 github _username: [MaxenceMottard](https://github.com/MaxenceMottard)
 ---
 professor : [@aegirops](https://github.com/aegirops)
+---
 
 ### Libraires & Programs installed
 

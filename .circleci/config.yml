@@ -87,7 +87,7 @@ workflows:
               only: master
       - publish-latest:
           requires:
-            - build
+            - build-image
           filters:
             branches:
               only: master

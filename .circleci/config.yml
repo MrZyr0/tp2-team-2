@@ -73,7 +73,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - ./${PROJECT_NAME}_nodejs.tar
+            - ${PROJECT_NAME}_nodejs.tar
+            - ${PROJECT_NAME}_nginx.tar
   publish-latest:
     executor: docker-publisher
     steps:

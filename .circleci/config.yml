@@ -73,7 +73,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - *.tar
+            - ./*.tar
   publish-latest:
     executor: docker-publisher
     steps:

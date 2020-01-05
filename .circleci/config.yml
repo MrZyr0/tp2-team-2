@@ -47,6 +47,9 @@ jobs:
       - checkout
       - setup_remote_docker # Ask circleci new Docker Engine to build outside of container
       - run:
+        name: View working directory tree
+        command: ls -lahR
+      - run:
           name: Build Docker image
           command: docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:latest .
       - run:

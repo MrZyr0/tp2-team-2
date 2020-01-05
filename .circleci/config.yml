@@ -84,18 +84,24 @@ jobs:
           name: Load archived nginx Docker image
           command: docker load -i /tmp/workspace/${PROJECT_NAME}_nginx.tar
       - run:
-          name: View docker images
+          name: View RAW Docker images
           command: docker images
+      - run:
+          name: Rename nginx Docker image
+          command: docker tag docker_nginx mrzyro/ynov-devops-tp2-team-2_nginx:latest
+      - run:
+          name: Rename nodejs Docker image
+          command: docker tag docker_nodejs mrzyro/ynov-devops-tp2-team-2_nodejs:latest
       - run:
           name: Publish nodejs Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push docker_nodejs:latest
+            docker push mrzyro/ynov-devops-tp2-team-2_nodejs:latest
       - run:
           name: Publish nginx Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push docker_nginx:latest
+            docker push mrzyro/ynov-devops-tp2-team-2_nginx:latest
 workflows:
   version: 2
   build-master:

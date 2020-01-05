@@ -84,13 +84,13 @@ jobs:
           name: Load archived nginx Docker image
           command: docker load -i /tmp/workspace/${PROJECT_NAME}_nginx.tar
       - run:
+          name: View docker images
+          command: docker images
+      - run:
           name: Publish nodejs Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push ./docker_nodejs:latest
-      - run:
-          name: View docker images
-          command: docker images
+            docker push docker_nodejs:latest
       - run:
           name: Publish nginx Docker Image to Docker Hub
           command: |

@@ -113,7 +113,7 @@ workflows:
               only: master
       - build-images:
           requires:
-            # - test-container-execution
+            - test-api-code #test-container-execution
           filters:
             branches:
               only: master

@@ -10,7 +10,7 @@ executors:
     docker:
       - image: circleci/buildpack-deps:stretch
 jobs:
-  test-api-execution:
+  test-api-code:
     docker:
       # specify the version you desire here
       - image: circleci/node:12.13.0
@@ -102,19 +102,19 @@ workflows:
   version: 2
   build-master:
     jobs:
-      - test-api-execution:
+      - test-api-code:
           filters:
             branches:
               only: master
       - test-container-execution:
           requires:
-            - test-api-execution
+            - test-api-code
           filters:
             branches:
               only: master
       - build-image:
           requires:
-            - test-api-execution
+            - test-api-code
           filters:
             branches:
               only: master

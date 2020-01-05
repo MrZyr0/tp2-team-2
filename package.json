@@ -8,10 +8,11 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "compose-prod": "docker-compose -f Docker/docker-compose.prod.yml up --build",
-    "compose-dev": "docker-compose -f Docker/docker-compose.dev.yml up --build",
+    "compose-prod": "docker-compose -f ./Docker/docker-compose.prod.yml up --build --force-recreate",
+    "compose-dev": "docker-compose -f ./Docker/docker-compose.dev.yml up --build --force-recreate",
     "eslint-fix": "./node_modules/.bin/eslint --fix ./index.js",
-    "eslint": "./node_modules/.bin/eslint ./index.js"
+    "eslint": "./node_modules/.bin/eslint ./index.js",
+    "docker-clean": "docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q) && docker rmi $(docker images -q)"
   },
   "dependencies": {
     "cors": "^2.8.5",

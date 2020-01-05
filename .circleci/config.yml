@@ -84,9 +84,6 @@ jobs:
           name: Load archived nginx Docker image
           command: docker load -i /tmp/workspace/${PROJECT_NAME}_nginx.tar
       - run:
-          name: View RAW Docker images
-          command: docker images
-      - run:
           name: Rename nginx Docker image
           command: docker tag docker_nginx mrzyro/ynov-devops-tp2-team-2_nginx:latest
       - run:
@@ -118,7 +115,7 @@ workflows:
               only: master
       - build-images:
           requires:
-            - test-api-code #test-container-execution
+            - test-container-execution
           filters:
             branches:
               only: master

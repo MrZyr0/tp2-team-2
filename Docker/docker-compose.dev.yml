@@ -1,7 +1,7 @@
 version: '3.1'
 
 services:
-  nodejs:
+  mrzyro/ynov-devops-tp2-team-2_nodejs:
     build:
       context: ../
       dockerfile: Docker/nodejs/Dockerfile.dev
@@ -39,7 +39,7 @@ services:
     container_name: devops_tp_redis
     networks:
       - sub_network_db
-  nginx:
+  mrzyro/ynov-devops-tp2-team-2_nginx:
     build:
       context: ./nginx
       dockerfile: Dockerfile

@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Down docker architecture (docker-compose)
           command: docker-compose -f ./Docker/docker-compose.dev.yml down
-  build-image:
+  build-images:
     executor: docker-publisher
     steps:
       - checkout
@@ -66,7 +66,7 @@ jobs:
           command: ls -lahR
       - run:
           name: Build Docker image
-          command: docker-compose -f .\docker-compose.prod.yml build --compress --force-rm --no-cache --pull --parallel # docker build -t $DOCKERHUB_USERNAME/$PROJECT_NAME:latest .
+          command: docker-compose -f ./Docker/docker-compose.prod.yml build --compress --force-rm --no-cache --pull --parallel # docker build -t $DOCKERHUB_USERNAME/$PROJECT_NAME:latest .
       - run:
           name: Archive nodejs Docker image
           command: docker save -o $PROJECT_NAME_nodejs.tar docker_nodejs
@@ -114,15 +114,16 @@ workflows:
           filters:
             branches:
               only: master
-      - build-image:
+      - build-images:
           requires:
             - test-api-code
+            - test-container-execution
           filters:
             branches:
               only: master
       - publish-latest:
           requires:
-            - build-image
+            - build-images
           filters:
             branches:
               only: master

@@ -81,7 +81,7 @@ workflows:
               only: master
       - build:
           requires:
-            - test
+            - launch-project
           filters:
             branches:
               only: master

@@ -79,7 +79,7 @@ workflows:
           filters:
             branches:
               only: master
-      - build:
+      - build-image:
           requires:
             - launch-project
           filters:

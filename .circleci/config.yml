@@ -67,9 +67,6 @@ jobs:
       - run:
           name: Archive nginx Docker image
           command: docker save -o ./${PROJECT_NAME}_nginx.tar docker_nginx
-      - run:
-          name: View working directory tree
-          command: ls -lahR
       - persist_to_workspace:
           root: .
           paths:

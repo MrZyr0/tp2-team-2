@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2020-01-05
+### Added
+- Add auto push docker image with circle ci
+- Add mention of docker images on the hub and slack in readme
+
+
 ## [3.1.0] - 2020-01-05
 ### Added
 - Add changelogs & readme files

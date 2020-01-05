@@ -90,7 +90,7 @@ jobs:
             docker push ./docker_nodejs:latest
       - run:
           name: View docker images
-          command: docker images -a
+          command: docker images
       - run:
           name: Publish nginx Docker Image to Docker Hub
           command: |

@@ -57,7 +57,7 @@ jobs:
       - checkout
       - setup_remote_docker # Ask circleci new Docker Engine to build outside of container
       - run:
-          name: View working directory tree
+          name: View working directory
           command: pwd
       - run:
           name: View working directory tree

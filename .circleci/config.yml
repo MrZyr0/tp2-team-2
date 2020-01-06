@@ -10,7 +10,7 @@ executors:
     docker:
       - image: circleci/buildpack-deps:stretch
 jobs:
-  test-api-code:
+  lint-code:
     docker:
       # specify the version you desire here
       - image: circleci/node:12.13.0
@@ -41,36 +41,25 @@ jobs:
       - run:
           name: ESLint & Prettier
           command: yarn eslint
-  test-container-execution:
-    docker:
-      - image: circleci/buildpack-deps:stretch
-    steps:
-      - checkout
-      - setup_remote_docker # Ask circleci new Docker Engine to run outside of container
-      - run:
-          name: Up docker architecture (docker-compose)
-          command: docker-compose -f ./Docker/docker-compose.prod.yml up --build --force-recreate --detach
-      - run:
-          name: Down docker architecture (docker-compose)
-          command: docker-compose -f ./Docker/docker-compose.prod.yml down
-  build-images:
+
+  ##JOB
+  build-image:
     executor: docker-publisher
     steps:
       - checkout
       - setup_remote_docker # Ask circleci new Docker Engine to build outside of container
       - run:
-          name: Build Docker images (docker-compose)
-          command: docker-compose -f ./Docker/docker-compose.prod.yml build --compress --force-rm --no-cache --pull --parallel # docker build -t $DOCKERHUB_USERNAME/${PROJECT_NAME}:latest .
-      - run:
-          name: Archive nodejs Docker image
-          command: docker save -o ./${PROJECT_NAME}_nodejs.tar docker_nodejs
+          name: Build Docker image
+          command: docker build -t $DOCKERHUB_USERNAME/${PROJECT_NAME}:latest ./Docker/nodejs/Dockerfile.prod --compress --force-rm --no-cache --pull
       - run:
           name: Archive nginx Docker image
-          command: docker save -o ./${PROJECT_NAME}_nginx.tar docker_nginx
+          command: docker save -o ./${PROJECT_NAME}_image.tar $DOCKERHUB_USERNAME/${PROJECT_NAME}:latest
       - persist_to_workspace:
           root: .
           paths:
-            - ./*.tar
+            - ./${PROJECT_NAME}_image.tar
+          
+  ##JOB
   publish-latest:
     executor: docker-publisher
     steps:
@@ -78,50 +67,33 @@ jobs:
           at: /tmp/workspace
       - setup_remote_docker
       - run:
-          name: Load archived nodejs Docker image
-          command: docker load -i /tmp/workspace/${PROJECT_NAME}_nodejs.tar
+          name: Load archived Docker image
+          command: docker load -i /tmp/workspace/${PROJECT_NAME}_image.tar
+      # - run:
+      #     name: Rename nginx Docker image
+      #     command: docker tag docker_nginx mrzyro/ynov-devops-tp2-team-2_nginx:latest
       - run:
-          name: Load archived nginx Docker image
-          command: docker load -i /tmp/workspace/${PROJECT_NAME}_nginx.tar
-      - run:
-          name: Rename nginx Docker image
-          command: docker tag docker_nginx mrzyro/ynov-devops-tp2-team-2_nginx:latest
-      - run:
-          name: Rename nodejs Docker image
-          command: docker tag docker_nodejs mrzyro/ynov-devops-tp2-team-2_nodejs:latest
-      - run:
-          name: Publish nodejs Docker Image to Docker Hub
+          name: Publish image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push mrzyro/ynov-devops-tp2-team-2_nodejs:latest
-      - run:
-          name: Publish nginx Docker Image to Docker Hub
-          command: |
-            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push mrzyro/ynov-devops-tp2-team-2_nginx:latest
+            docker push $DOCKERHUB_USERNAME/${PROJECT_NAME}:latest
 workflows:
   version: 2
   build-master:
     jobs:
-      - test-api-code:
+      - lint-code:
           filters:
             branches:
               only: master
-      - test-container-execution:
+      - build-image:
           requires:
-            - test-api-code
-          filters:
-            branches:
-              only: master
-      - build-images:
-          requires:
-            - test-container-execution
+            - lint-code
           filters:
             branches:
               only: master
       - publish-latest:
           requires:
-            - build-images
+            - build-image
           filters:
             branches:
               only: master

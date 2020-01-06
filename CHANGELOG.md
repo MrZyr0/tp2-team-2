@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.2] - 2020-01-06
+### Added
+- Add support of git tags to tag docker images
+- Add app running test
+
+### Changed
+- Reorganization of the workflow
+
+
+## [3.2.1] - 2020-01-06
+### Changed
+- Change the image creation and push on docker hub.
+  Only the nodejs image is now managed.
+
 ## [3.2.0] - 2020-01-05
 ### Added
 - Add auto push docker image with circle ci

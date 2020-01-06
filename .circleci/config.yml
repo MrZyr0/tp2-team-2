@@ -9,40 +9,35 @@ executors:
       PROJECT_NAME: ynov-devops-tp2-team-2-api
     docker:
       - image: circleci/buildpack-deps:stretch
-jobs:
-  lint-code:
+  docker-runner:
     docker:
-      # specify the version you desire here
       - image: circleci/node:12.13.0
+jobs:
 
+  ## new JOB !
+  lint-code:
+    executor: docker-runner
     working_directory: ~/repo
 
     steps:
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-
-      # yarn install
       - run:
           name: Install Dependencies
           command: yarn install
-
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-
-      # ESLint & Prettier
       - run:
-          name: ESLint & Prettier
+          name: run ESLint & Prettier
           command: yarn eslint
 
-  ##JOB
+
+  ## new JOB !
   build-image:
     executor: docker-publisher
     steps:
@@ -53,17 +48,33 @@ jobs:
           command: ln ./Docker/nodejs/Dockerfile.prod ./Dockerfile
       - run:
           name: Build Docker image
-          command: docker build -t $DOCKERHUB_USERNAME/${PROJECT_NAME}:latest . --compress --force-rm --no-cache --pull
+          command: docker build -t $DOCKERHUB_USERNAME/$PROJECT_NAME:latest . --compress --force-rm --no-cache --pull
       - run:
           name: Archive Docker image
-          command: docker save -o ./image.tar $DOCKERHUB_USERNAME/${PROJECT_NAME}:latest
+          command: docker save -o ./image.tar $DOCKERHUB_USERNAME/$PROJECT_NAME:latest
       - persist_to_workspace:
           root: .
           paths:
             - ./image.tar
           
-  ##JOB
-  publish-latest:
+  ## new JOB !
+  # publish-latest:
+  #   executor: docker-publisher
+  #   steps:
+  #     - attach_workspace:
+  #         at: /tmp/workspace
+  #     - setup_remote_docker
+  #     - run:
+  #         name: Load archived Docker image
+  #         command: docker load -i /tmp/workspace/image.tar
+  #     - run:
+  #         name: Publish image to Docker Hub
+  #         command: |
+  #           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  #           docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:latest
+
+  ## new JOB !
+  publish-tag:
     executor: docker-publisher
     steps:
       - attach_workspace:
@@ -72,31 +83,54 @@ jobs:
       - run:
           name: Load archived Docker image
           command: docker load -i /tmp/workspace/image.tar
-      # - run:
-      #     name: Rename nginx Docker image
-      #     command: docker tag docker_nginx mrzyro/ynov-devops-tp2-team-2_nginx:latest
       - run:
-          name: Publish image to Docker Hub
-          command: |
-            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push $DOCKERHUB_USERNAME/${PROJECT_NAME}:latest
+          name: View image TAG
+          command: echo ${CIRCLE_TAG/v/''}
+      - run:
+          name: View Docker images
+          command: docker images -a
+      - run:
+          name: Rename Docker image
+          command: docker tag $DOCKERHUB_USERNAME/$PROJECT_NAME:latest $DOCKERHUB_USERNAME/$PROJECT_NAME:${CIRCLE_TAG/v/''}
+      - run:
+          name: Connect to Docker Hub
+          command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run:
+          name: Push image to Docker Hub
+          command: | 
+            docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:latest
+            docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:${CIRCLE_TAG/v/''}
+
 workflows:
   version: 2
-  build-master:
+  testing-project:
     jobs:
-      - lint-code:
-          filters:
-            branches:
-              only: master
+      - lint-code
+      # - build-image:
+      #     requires:
+      #       - lint-code
+      #     filters:
+      #       branches:
+      #         only: master
+      # - publish-latest:
+      #     requires:
+      #       - build-image
+      #     filters:
+      #       branches:
+      #         only: master
+  build-tags:
+    jobs:
       - build-image:
-          requires:
-            - lint-code
           filters:
+            tags:
+              only: /^v.*/  # execute only on tag v**
             branches:
-              only: master
-      - publish-latest:
+              ignore: /.*/  # ignore all branches
+      - publish-tag:
           requires:
             - build-image
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only: master
+              ignore: /.*/

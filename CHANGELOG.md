@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.0] - 2020-01-06
+### Changed
+- Clean circle-ci config
+
+
 ## [3.3.3] - 2020-01-06
 ### Changed
 - Remove useless port forwarding in docker-compose.prod

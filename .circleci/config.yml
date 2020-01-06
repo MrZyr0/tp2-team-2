@@ -36,13 +36,12 @@ jobs:
           name: run ESLint & Prettier
           command: yarn eslint
 
-
   ## new JOB !
   build-image:
     executor: docker-publisher
     steps:
       - checkout
-      - setup_remote_docker # Ask circleci new Docker Engine to build outside of container
+      - setup_remote_docker # Ask circleci for a new Docker Engine in order to build outside of this runtime container.
       - run:
           name: Create symlink to Dockerfile.prod
           command: ln ./Docker/nodejs/Dockerfile.prod ./Dockerfile
@@ -53,25 +52,10 @@ jobs:
           name: Archive Docker image
           command: docker save -o ./image.tar $DOCKERHUB_USERNAME/$PROJECT_NAME:latest
       - persist_to_workspace:
+          name: Store the archive
           root: .
           paths:
             - ./image.tar
-          
-  ## new JOB !
-  # publish-latest:
-  #   executor: docker-publisher
-  #   steps:
-  #     - attach_workspace:
-  #         at: /tmp/workspace
-  #     - setup_remote_docker
-  #     - run:
-  #         name: Load archived Docker image
-  #         command: docker load -i /tmp/workspace/image.tar
-  #     - run:
-  #         name: Publish image to Docker Hub
-  #         command: |
-  #           echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-  #           docker push $DOCKERHUB_USERNAME/$PROJECT_NAME:latest
 
   ## new JOB !
   publish-tag:
@@ -79,18 +63,12 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace
-      - setup_remote_docker
+      - setup_remote_docker # Ask circleci for a new Docker Engine in order to build outside of this runtime container.
       - run:
           name: Load archived Docker image
           command: docker load -i /tmp/workspace/image.tar
       - run:
-          name: View image TAG
-          command: echo ${CIRCLE_TAG/v/''}
-      - run:
-          name: View Docker images
-          command: docker images -a
-      - run:
-          name: Rename Docker image
+          name: TAG Docker image
           command: docker tag $DOCKERHUB_USERNAME/$PROJECT_NAME:latest $DOCKERHUB_USERNAME/$PROJECT_NAME:${CIRCLE_TAG/v/''}
       - run:
           name: Connect to Docker Hub
@@ -103,21 +81,13 @@ jobs:
 
 workflows:
   version: 2
+
+  ## new WORKFLOW !
   testing-project:
     jobs:
       - lint-code
-      # - build-image:
-      #     requires:
-      #       - lint-code
-      #     filters:
-      #       branches:
-      #         only: master
-      # - publish-latest:
-      #     requires:
-      #       - build-image
-      #     filters:
-      #       branches:
-      #         only: master
+
+  ## new WORKFLOW !
   build-tags:
     jobs:
       - build-image:

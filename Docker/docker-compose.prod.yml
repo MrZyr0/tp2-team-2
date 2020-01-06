@@ -13,8 +13,6 @@ services:
       - DB_PASSWORD=azertyuiop01
       - DB_NAME=test
       - DB_HOST=devops_tp_postgres
-    ports:
-    - 3000:3000
     depends_on:
       - postgres
       - redis

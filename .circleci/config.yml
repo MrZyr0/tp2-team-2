@@ -12,6 +12,24 @@ executors:
   docker-runner:
     docker:
       - image: circleci/node:12.13.0
+  docker-runner-services:
+    environment:
+      PORT: 3000
+      DB_USER: admin
+      DB_PASSWORD: azertyuiop01
+      DB_NAME: test
+      DB_HOST: 127.0.0.1
+      REDIS_HOST: 127.0.0.1
+    docker:
+      - image: circleci/node:12.13.0
+      - image: postgres
+        environment:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: azertyuiop01
+          POSTGRES_DB: test
+          PGDATA: /data/postgres
+      - image: redis
+
 jobs:
 
   ## new JOB !
@@ -40,7 +58,6 @@ jobs:
   running-unit-test:
     executor: docker-runner
     working_directory: ~/repo
-
     steps:
       - checkout
       - restore_cache:
@@ -55,13 +72,20 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
+          name: Start API
+          command: yarn start
+          background: true
+      - run:
+          name: Waiting API started
+          command: sleep 5
+      - run:
           name: CURL API
-          command: curl http://localhost:8080/api
+          command: curl http://127.0.0.1:$PORT/
       - run:
           name: Running tests
           command: yarn test
 
-   ## new JOB !
+  ## new JOB !
   build-image:
     executor: docker-publisher
     steps:

@@ -37,6 +37,28 @@ jobs:
           command: yarn eslint
 
   ## new JOB !
+  running-unit-test:
+    executor: docker-runner
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+      - run:
+          name: Install Dependencies
+          command: yarn install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: Running tests
+          command: yarn test
+
+   ## new JOB !
   build-image:
     executor: docker-publisher
     steps:
@@ -86,6 +108,9 @@ workflows:
   testing-project:
     jobs:
       - lint-code
+      - running-unit-test:
+        requires:
+        - lint-code
 
   ## new WORKFLOW !
   build-tags:

@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "mocha './tests/*.js'",
+    "test": "./node_modules/.bin/mocha './tests/*.js'",
     "compose-prod": "docker-compose -f ./Docker/docker-compose.prod.yml up --build --force-recreate",
     "compose-dev": "docker-compose -f ./Docker/docker-compose.dev.yml up --build --force-recreate",
     "eslint-fix": "./node_modules/.bin/eslint --fix ./index.js",

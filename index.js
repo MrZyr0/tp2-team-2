@@ -45,6 +45,8 @@ app.get('/status', async (req, res) => {
 
 const { PORT } = process.env;
 app.listen(PORT, () => {
-    pgClient.connect();
+    setTimeout(() => {
+        pgClient.connect();
+    }, 5000);
     console.log(`Server started. PORT : ${PORT}`);
 });

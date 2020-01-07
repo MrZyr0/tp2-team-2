@@ -17,7 +17,7 @@ const redisClient = redis.createClient({ host: 'devops_tp_redis' });
 app.use(cors());
 app.use(express.json());
 
-app.get('/api', (req, res) => {
+app.get('/', (req, res) => {
     res.json({ message: 'Hello World' });
 });
 
@@ -43,15 +43,8 @@ app.get('/status', async (req, res) => {
     });
 });
 
-const run = async () => {
-    try {
-        await pgClient.connect();
-        const port = process.env.PORT;
-        app.listen(port, () => console.log(`Server started. PORT : ${port}`));
-    } catch (e) {
-        console.log(e);
-        console.error('Unable to connect to the postgreSQL database');
-    }
-};
-
-run();
+const { PORT } = process.env;
+app.listen(PORT, () => {
+    pgClient.connect();
+    console.log(`Server started. PORT : ${PORT}`);
+});

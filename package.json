@@ -8,6 +8,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "test": "mocha './tests/*.js'",
     "compose-prod": "docker-compose -f ./Docker/docker-compose.prod.yml up --build --force-recreate",
     "compose-dev": "docker-compose -f ./Docker/docker-compose.dev.yml up --build --force-recreate",
     "eslint-fix": "./node_modules/.bin/eslint --fix ./index.js",
@@ -15,11 +16,14 @@
     "docker-clean": "docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q) && docker rmi $(docker images -q)"
   },
   "dependencies": {
+    "chai": "^4.2.0",
     "cors": "^2.8.5",
     "eslint": "^6.8.0",
     "express": "^4.17.1",
+    "mocha": "^7.0.0",
     "pg": "^7.14.0",
-    "redis": "^2.8.0"
+    "redis": "^2.8.0",
+    "request": "^2.88.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",

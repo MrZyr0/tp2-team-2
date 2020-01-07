@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.6.0] - 2020-01-06
+### Added
+- Add "install-project" job in "testing-project" workflow
+### Changed
+- Change dependencies in "testing-project" workflow
+
+
 ## [3.5.0] - 2020-01-06
 ### Added
 - Add "running-test" job in "testing-project" workflow

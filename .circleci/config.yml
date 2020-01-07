@@ -55,6 +55,9 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
+          name: CURL API
+          command: curl http://localhost:8080/api
+      - run:
           name: Running tests
           command: yarn test
 
@@ -109,8 +112,8 @@ workflows:
     jobs:
       - lint-code
       - running-unit-test:
-        requires:
-        - lint-code
+          requires:
+            - lint-code
 
   ## new WORKFLOW !
   build-tags:

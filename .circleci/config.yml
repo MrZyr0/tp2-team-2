@@ -12,7 +12,7 @@ executors:
   docker-runner:
     docker:
       - image: circleci/node:12.13.0
-  docker-runner-services:
+  docker-runner-with-services:
     environment:
       PORT: 3000
       DB_USER: admin
@@ -20,6 +20,7 @@ executors:
       DB_NAME: test
       DB_HOST: 127.0.0.1
       REDIS_HOST: 127.0.0.1
+      TEST_URI: http://127.0.0.1:3000/
     docker:
       - image: circleci/node:12.13.0
       - image: postgres
@@ -30,8 +31,8 @@ executors:
           PGDATA: /data/postgres
       - image: redis
 
-jobs:
 
+jobs:
   ## new JOB !
   lint-code:
     executor: docker-runner
@@ -56,7 +57,7 @@ jobs:
 
   ## new JOB !
   running-unit-test:
-    executor: docker-runner
+    executor: docker-runner-with-services
     working_directory: ~/repo
     steps:
       - checkout
@@ -80,7 +81,7 @@ jobs:
           command: sleep 5
       - run:
           name: CURL API
-          command: curl http://127.0.0.1:$PORT/
+          command: curl $TEST_URI
       - run:
           name: Running tests
           command: yarn test

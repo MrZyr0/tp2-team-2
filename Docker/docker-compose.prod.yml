@@ -13,6 +13,8 @@ services:
       - DB_PASSWORD=azertyuiop01
       - DB_NAME=test
       - DB_HOST=devops_tp_postgres
+      - TEST_URI=http://127.0.0.1:8080/api/
+      - REDIS_HOST=devops_tp_redis
     depends_on:
       - postgres
       - redis

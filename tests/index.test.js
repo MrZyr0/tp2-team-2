@@ -3,7 +3,7 @@ const request = require('request');
 
 const functions = require('../src/functions');
 
-const baseApi = `http://localhost:8080/api`;
+const { TEST_URI } = process.env;
 
 describe('Tests', () => {
     describe('Functions', () => {
@@ -15,12 +15,12 @@ describe('Tests', () => {
     describe('API', () => {
         describe('Root', () => {
             it('Status code', () => {
-                request(baseApi, (error, response) => {
+                request(TEST_URI, (error, response) => {
                     expect(response.statusCode).to.equal(200);
                 });
             });
             it('Body', () => {
-                request(baseApi, (error, response, body) => {
+                request(TEST_URI, (error, response, body) => {
                     expect(body).to.equal(JSON.stringify({ message: 'Hello World' }));
                 });
             });

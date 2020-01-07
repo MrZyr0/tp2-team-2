@@ -5,14 +5,17 @@ const app = express();
 const { Client } = require('pg');
 const redis = require('redis');
 
+const { DB_USER, DB_HOST, DB_PASSWORD, DB_NAME, PORT, REDIS_HOST } = process.env;
+
 const pgClient = new Client({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    user: DB_USER,
+    host: DB_HOST,
+    password: DB_PASSWORD,
+    database: DB_NAME,
     port: 5432,
 });
-const redisClient = redis.createClient({ host: 'devops_tp_redis' });
+
+const redisClient = redis.createClient({ host: REDIS_HOST });
 
 app.use(cors());
 app.use(express.json());
@@ -43,7 +46,6 @@ app.get('/status', async (req, res) => {
     });
 });
 
-const { PORT } = process.env;
 app.listen(PORT, () => {
     setTimeout(() => {
         pgClient.connect();
